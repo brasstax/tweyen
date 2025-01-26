@@ -47,6 +47,8 @@ if not BLUESKY_FOLLOW:
 
 JETSTREAM_URL = os.environ.get("JETSTREAM_URL", "jetstream2.us-west.bsky.network")
 
+BLUESKY_URL = os.environ.get("BLUESKY_URL", "bsky.app")
+
 DISCORD_WEBHOOK = os.environ.get("DISCORD_WEBHOOK", None)
 if not DISCORD_WEBHOOK:
     raise EnvMissingException("DISCORD_WEBHOOK environment variable must be set.")
@@ -58,7 +60,9 @@ def main():
     jetstream_url = f"wss://{JETSTREAM_URL}/subscribe?wantedCollections=app.bsky.feed.post&wantedCollections=app.bsky.feed.repost"
     for entry in bluesky_follow:
         jetstream_url += f"&wantedDids={entry}"
+    print(f"jetstream url: {jetstream_url}")
     with connect(jetstream_url) as websocket:
+        print(f"connected to jetstream URL: {jetstream_url}")
         while not killer.kill_now:
             msg = json.loads(websocket.recv())
             if (
@@ -66,7 +70,14 @@ def main():
                 and msg["commit"]["collection"] == "app.bsky.feed.repost"
             ):
                 print(
-                    f'repost: {parse_repost(msg["commit"]["record"]["subject"]["uri"])}'
+                    f'repost: {parse_repost(msg["commit"]["record"]["subject"]["uri"], BLUESKY_URL)}'
+                )
+            if (
+                msg["commit"]["operation"] == "create"
+                and msg["commit"]["collection"] == "app.bsky.feed.post"
+            ):
+                print(
+                    f'post: https://{BLUESKY_URL}/profile/{msg["did"]}/post/{msg["commit"]["rkey"]}'
                 )
 
 
