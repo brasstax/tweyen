@@ -69,16 +69,17 @@ def main():
                 msg["commit"]["operation"] == "create"
                 and msg["commit"]["collection"] == "app.bsky.feed.repost"
             ):
-                print(
-                    f'repost: {parse_repost(msg["commit"]["record"]["subject"]["uri"], BLUESKY_URL)}'
+                post = parse_repost(
+                    msg["commit"]["record"]["subject"]["uri"], BLUESKY_URL
                 )
+                print(f"repost: {post}")
             if (
                 msg["commit"]["operation"] == "create"
                 and msg["commit"]["collection"] == "app.bsky.feed.post"
             ):
-                print(
-                    f'post: https://{BLUESKY_URL}/profile/{msg["did"]}/post/{msg["commit"]["rkey"]}'
-                )
+                post = f'https://{BLUESKY_URL}/profile/{msg["did"]}/post/{msg["commit"]["rkey"]}'
+                print(f"post: {post}")
+            requests.post(url=DISCORD_WEBHOOK, data={"content": post}, timeout=30)
 
 
 if __name__ == "__main__":
