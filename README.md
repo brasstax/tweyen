@@ -15,3 +15,6 @@ copy `.env.sample` to `.env` and configure them there, or set them in your envir
 
 ## Docker
 `docker compose up`
+
+# TODO
+When restarting the bot, it seems to sometimes repost the same URL. Should probably cache this better.
