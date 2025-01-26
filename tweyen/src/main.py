@@ -1,6 +1,7 @@
 # main.py
 import os
 import signal
+import json
 from websockets.sync.client import connect
 import requests
 
@@ -8,14 +9,34 @@ import requests
 class EnvMissingException(Exception):
     pass
 
+
 class GracefulKiller:
     kill_now = False
+
     def __init__(self):
         signal.signal(signal.SIGINT, self.exit_gracefully)
         signal.signal(signal.SIGTERM, self.exit_gracefully)
 
     def exit_gracefully(self, signum, frame):
         self.kill_now = True
+
+
+def parse_repost(uri: str, bluesky_fqdn: str = "bsky.app") -> str:
+    """
+    Parses an atproto uri from a repost commit action into an actual
+    Bluesky URL.
+
+    :param uri: the atproto URI of a repost, ie:
+    at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3lg5g64vptc23
+
+    :param bluesky_fqdn: the string of the expected bluesky destination.
+    defaults to "bsky.app".
+    """
+
+    split_uri = uri.split("/")
+    did = split_uri[2]
+    post = split_uri[4]
+    return f"https://{bluesky_fqdn}/profile/{did}/post/{post}"
 
 
 BLUESKY_FOLLOW = os.environ.get("BLUESKY_FOLLOW", None)
@@ -39,8 +60,15 @@ def main():
         jetstream_url += f"&wantedDids={entry}"
     with connect(jetstream_url) as websocket:
         while not killer.kill_now:
-            msg = websocket.recv()
-            print(msg)
+            msg = json.loads(websocket.recv())
+            if (
+                msg["commit"]["operation"] == "create"
+                and msg["commit"]["collection"] == "app.bsky.feed.repost"
+            ):
+                print(
+                    f'repost: {parse_repost(msg["commit"]["record"]["subject"]["uri"])}'
+                )
+
 
 if __name__ == "__main__":
     main()
