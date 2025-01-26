@@ -1,0 +1,2 @@
+[MESSAGES CONTROL]
+disable=line-too-long, not-context-manager, missing-module-docstring, missing-class-docstring, missing-function-docstring

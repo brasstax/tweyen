@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "tweyen"
+version = "0.1.0"
+description = "Grabs bluesky posts and posts them on discord"
+authors = ["Brass Tax <brasstax@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.13"
+simple-websockets = "^0.1.0"
+requests = "^2.32.3"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
+pylint = "^3.3.1"
+python-dotenv = "^1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+bot = "tweyen.src.main:main"

@@ -1,0 +1,6 @@
+services:
+  bot:
+    env_file: ".env"
+    environment:
+      - PYTHONUNBUFFERED=1
+    image: "catfacts/tweyen"
