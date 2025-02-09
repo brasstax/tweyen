@@ -4,14 +4,14 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
     image: "catfacts/tweyen"
-    restart: unless-stopped
+    restart: always
     depends_on:
       - jetstream
   jetstream:
     # check https://github.com/bluesky-social/jetstream/pkgs/container/jetstream/versions
     # to pick a JETSTREAM_VERSION
     image: ghcr.io/bluesky-social/jetstream:${JETSTREAM_VERSION}
-    restart: unless-stopped
+    restart: always
     container_name: jetstream
     volumes:
       - ./data:/data
