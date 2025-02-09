@@ -45,7 +45,7 @@ if not BLUESKY_FOLLOW:
         "BLUESKY_FOLLOW environment variable must be set to a comma-separated list of DIDs."
     )
 
-JETSTREAM_URL = os.environ.get("JETSTREAM_URL", "jetstream2.us-west.bsky.network")
+JETSTREAM_URL = os.environ.get("JETSTREAM_URL", "wss://jetstream2.us-west.bsky.network")
 
 BLUESKY_URL = os.environ.get("BLUESKY_URL", "bsky.app")
 
@@ -57,7 +57,7 @@ if not DISCORD_WEBHOOK:
 def main():
     killer = GracefulKiller()
     bluesky_follow = BLUESKY_FOLLOW.split(",")
-    jetstream_url = f"wss://{JETSTREAM_URL}/subscribe?wantedCollections=app.bsky.feed.post&wantedCollections=app.bsky.feed.repost"
+    jetstream_url = f"{JETSTREAM_URL}/subscribe?wantedCollections=app.bsky.feed.post&wantedCollections=app.bsky.feed.repost"
     for entry in bluesky_follow:
         jetstream_url += f"&wantedDids={entry}"
     print(f"jetstream url: {jetstream_url}")
